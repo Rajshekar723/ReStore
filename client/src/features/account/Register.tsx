@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
 import { Paper } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 import {  useForm } from 'react-hook-form';
@@ -18,6 +18,7 @@ import { LoadingButton } from '@mui/lab';
 
 
 import agent from '../../app/api/agent';
+import { toast } from 'react-toastify';
 
 
 // TODO remove, this demo shouldn't need to reset the theme.
@@ -25,7 +26,7 @@ import agent from '../../app/api/agent';
 
 export default function register() {
  //const [ValidationErrors, setValidationErrors] = useState([]);
-
+  const navigate = useNavigate();
 
   const {register , handleSubmit , setError,formState : {isSubmitting,errors,isValid}} = useForm({
     mode: 'onTouched',
@@ -62,6 +63,10 @@ export default function register() {
             Register
           </Typography>
           <Box component="form" onSubmit={handleSubmit(data => agent.Account.register(data)
+            .then(() => {
+              toast.success('Registration successful - you can now login!');
+              navigate('/login');
+            })
             .catch(error => handleApiErrors(error)))} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -83,7 +88,15 @@ export default function register() {
               label="Email"
               
              
-                {...register('email',{required:'email is required'})}
+                {...register('email',{
+                  required:'email is required',
+                  pattern:{
+                    value: /^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$/,
+                    message: 'Invalid email'
+
+                  }
+
+                })}
                 error={!!errors.email}
                 helperText={errors?.email?.message as string}
             />
@@ -94,7 +107,13 @@ export default function register() {
               label="Password"
               type="password"
            
-              {...register('password',{required: 'Password is required'})}
+              {...register('password',{
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be at least 6 characters'
+                }
+              })}
               error={!!errors.password}
               helperText={errors?.password?.message as string}
             />

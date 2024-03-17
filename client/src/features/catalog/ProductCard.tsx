@@ -9,6 +9,7 @@ import { currencyFormat } from "../../app/util/util";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addBasketItemAsync } from "../basket/basketSlice";
 
+
 interface Props{
     product: Product;
 
